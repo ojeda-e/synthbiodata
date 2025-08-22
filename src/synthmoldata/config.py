@@ -110,7 +110,18 @@ class ADMEConfig(BaseConfig):
             raise ValueError("renal_clearance_ratio must be between 0 and 1")
         return self
 
+# Overloads for the create_config function - type hints
+@overload
+def create_config(data_type: Literal["molecular-descriptors"], imbalanced: bool = False, **kwargs) -> MolecularConfig:
+    ...
 
+@overload
+def create_config(data_type: Literal["adme"], imbalanced: bool = False, **kwargs) -> ADMEConfig:
+    ...
+
+@overload
+def create_config(data_type: str, imbalanced: bool = False, **kwargs) -> BaseConfig:
+    ...
 def create_config(data_type: str, imbalanced: bool = False, **kwargs) -> BaseConfig:
     """Create a configuration for the specified data type."""
     config_classes = {
