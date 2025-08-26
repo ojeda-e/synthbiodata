@@ -3,8 +3,8 @@
 import pytest
 import numpy as np
 import polars
-from synthmoldata.config import MolecularConfig, ADMEConfig
-from synthmoldata.core.generator import MolecularGenerator, ADMEGenerator
+from synthbiodata.config import MolecularConfig, ADMEConfig
+from synthbiodata.core.generator import MolecularGenerator, ADMEGenerator
 
 
 @pytest.fixture(scope="class")

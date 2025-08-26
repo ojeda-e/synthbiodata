@@ -17,7 +17,7 @@ def tests(session: nox.Session) -> None:
     install_dev_dependencies(session)
     session.run(
         "pytest",
-        "--cov=synthmoldata",
+        "--cov=synthbiodata",
         "--cov-report=term-missing",
         *session.posargs,
     )

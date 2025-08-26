@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "synthmoldata"
+name = "synthbiodata"
 version = "0.0.0"
 description = "A synthetic data generator for drug discovery machine learning"
 readme = "README.md"
@@ -45,11 +45,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ojeda-e/synthmoldata"
-Repository = "https://github.com/ojeda-e/synthmoldata.git"
-Documentation = "https://github.com/ojeda-e/synthmoldata#readme"
+Homepage = "https://github.com/ojeda-e/synthbiodata"
+Repository = "https://github.com/ojeda-e/synthbiodata.git"
+Documentation = "https://github.com/ojeda-e/synthbiodata#readme"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/synthmoldata"]
+packages = ["src/synthbiodata"]
 
 

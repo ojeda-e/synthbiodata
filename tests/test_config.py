@@ -1,7 +1,7 @@
 """Tests for configuration module."""
 
 import pytest
-from synthmoldata.config import (
+from synthbiodata.config import (
     BaseConfig,
     MolecularConfig,
     ADMEConfig,

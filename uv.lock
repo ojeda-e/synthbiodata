@@ -707,7 +707,7 @@ wheels = [
 ]
 
 [[package]]
-name = "synthmoldata"
+name = "synthbiodata"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
