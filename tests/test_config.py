@@ -73,6 +73,16 @@ def test_molecular_config_validation():
             target_families=['A', 'B'],
             target_family_probs=[1.0]
         )
+        
+@pytest.mark.parametrize("param,value", [
+    ("mw_std", 0.0),
+    ("logp_std", -1.0),
+    ("tpsa_std", 0.0)
+])
+def test_molecular_config_validation_invalid_standard_deviations(param, value):
+    """Test that MolecularConfig rejects invalid standard deviations."""
+    with pytest.raises(ValueError, match=f"{param} must be positive"):
+        MolecularConfig(**{param: value})
 
 
 def test_adme_config_defaults():
@@ -90,13 +100,25 @@ def test_adme_config_defaults():
 
 def test_adme_config_invalid_params():
     """Test ADMEConfig invalid params."""
-    # invalid absorption mean
+    # Invalid absorption mean
     with pytest.raises(ValueError, match="absorption_mean must be between 0 and 100"):
         ADMEConfig(absorption_mean=150.0)
     
-    # invalid clearance
+    # Invalid clearance
     with pytest.raises(ValueError, match="clearance_mean must be positive"):
         ADMEConfig(clearance_mean=-1.0)
+        
+
+@pytest.mark.parametrize("param,value", [
+    ("absorption_std", 0.0),
+    ("plasma_protein_binding_std", -1.0),
+    ("clearance_std", 0.0),
+    ("half_life_std", -2.0)
+])
+def test_adme_config_validation_invalid_standard_deviations(param, value):
+    """Test that ADMEConfig rejects invalid standard deviations."""
+    with pytest.raises(ValueError, match=f"{param} must be positive"):
+        ADMEConfig(**{param: value})
 
 
 def test_create_config_molecular_descriptors():
