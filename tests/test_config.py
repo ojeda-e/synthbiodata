@@ -100,16 +100,32 @@ def test_adme_config_defaults():
     assert config.half_life_mean == 12.0
 
 
-def test_adme_config_invalid_params():
-    """Test ADMEConfig invalid params with custom exceptions."""
-    # Invalid absorption mean
-    with pytest.raises(RangeError, match="absorption_mean must be between 0 and 100, got 150.0"):
-        ADMEConfig(absorption_mean=150.0)
-    
-    # Invalid clearance
-    with pytest.raises(RangeError, match="clearance_mean must be greater than 0, got -1.0"):
-        ADMEConfig(clearance_mean=-1.0)
-        
+@pytest.mark.parametrize("param,value", [
+    ("absorption_mean", 150.0),
+    ("plasma_protein_binding_mean", -10.0)
+])
+def test_adme_config_validation_invalid_percentages(param, value):
+    """Test that ADMEConfig rejects invalid percentage parameters."""
+    with pytest.raises(RangeError, match=f"{param} must be between 0 and 100, got {value}"):
+        ADMEConfig(**{param: value})
+
+@pytest.mark.parametrize("param,value", [
+    ("clearance_mean", -1.0),
+    ("half_life_mean", 0.0)
+])
+def test_adme_config_validation_invalid_means(param, value):
+    """Test that ADMEConfig rejects invalid mean parameters."""
+    with pytest.raises(RangeError, match=f"{param} must be greater than 0, got {value}"):
+        ADMEConfig(**{param: value})
+
+@pytest.mark.parametrize("param,value", [
+    ("renal_clearance_ratio", -0.1),
+    ("renal_clearance_ratio", 1.5)
+])
+def test_adme_config_validation_invalid_ratios(param, value):
+    """Test that ADMEConfig rejects invalid ratio parameters."""
+    with pytest.raises(RangeError, match=f"{param} must be between 0 and 1, got {value}"):
+        ADMEConfig(**{param: value})
 
 @pytest.mark.parametrize("param,value", [
     ("absorption_std", 0.0),
@@ -118,7 +134,7 @@ def test_adme_config_invalid_params():
     ("half_life_std", -2.0)
 ])
 def test_adme_config_validation_invalid_standard_deviations(param, value):
-    """Test that ADMEConfig rejects invalid standard deviations with custom exceptions."""
+    """Test that ADMEConfig rejects invalid standard deviations."""
     with pytest.raises(RangeError, match=f"{param} must be greater than 0, got {value}"):
         ADMEConfig(**{param: value})
 

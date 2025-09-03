@@ -158,43 +158,46 @@ class ADMEConfig(BaseConfig):
     @model_validator(mode='after')
     def validate_parameters(self) -> 'ADMEConfig':
         """Validate ADME parameters and standard deviations."""
-        # Validate means and ratios
-        if self.absorption_mean < 0 or self.absorption_mean > 100:
-            logger.error(f"Invalid absorption mean: {self.absorption_mean}")
-            raise RangeError("absorption_mean", self.absorption_mean, min_val=0, max_val=100)
-            
-        if self.plasma_protein_binding_mean < 0 or self.plasma_protein_binding_mean > 100:
-            logger.error(f"Invalid plasma protein binding mean: {self.plasma_protein_binding_mean}")
-            raise RangeError("plasma_protein_binding_mean", self.plasma_protein_binding_mean, min_val=0, max_val=100)
-            
-        if self.clearance_mean <= 0:
-            logger.error(f"Invalid clearance mean: {self.clearance_mean}")
-            raise RangeError("clearance_mean", self.clearance_mean, min_val=0)
-            
-        if self.half_life_mean <= 0:
-            logger.error(f"Invalid half life mean: {self.half_life_mean}")
-            raise RangeError("half_life_mean", self.half_life_mean, min_val=0)
-            
-        if self.renal_clearance_ratio < 0 or self.renal_clearance_ratio > 1:
-            logger.error(f"Invalid renal clearance ratio: {self.renal_clearance_ratio}")
-            raise RangeError("renal_clearance_ratio", self.renal_clearance_ratio, min_val=0, max_val=1)
+        # Parameters that must be between 0 and 100 (percentages)
+        percentage_params = [
+            ('absorption_mean', self.absorption_mean),
+            ('plasma_protein_binding_mean', self.plasma_protein_binding_mean)
+        ]
+        for param, value in percentage_params:
+            if value < 0 or value > 100:
+                logger.error(f"Invalid {param}: {value}")
+                raise RangeError(param, value, min_val=0, max_val=100)
 
-        # Validate standard deviations
-        if self.absorption_std <= 0:
-            logger.error(f"Invalid absorption std: {self.absorption_std}")
-            raise RangeError("absorption_std", self.absorption_std, min_val=0)
-            
-        if self.plasma_protein_binding_std <= 0:
-            logger.error(f"Invalid plasma protein binding std: {self.plasma_protein_binding_std}")
-            raise RangeError("plasma_protein_binding_std", self.plasma_protein_binding_std, min_val=0)
-            
-        if self.clearance_std <= 0:
-            logger.error(f"Invalid clearance std: {self.clearance_std}")
-            raise RangeError("clearance_std", self.clearance_std, min_val=0)
-            
-        if self.half_life_std <= 0:
-            logger.error(f"Invalid half life std: {self.half_life_std}")
-            raise RangeError("half_life_std", self.half_life_std, min_val=0)
+        # Parameters that must be positive (means)
+        positive_means = [
+            ('clearance_mean', self.clearance_mean),
+            ('half_life_mean', self.half_life_mean)
+        ]
+        for param, value in positive_means:
+            if value <= 0:
+                logger.error(f"Invalid {param}: {value}")
+                raise RangeError(param, value, min_val=0)
+
+        # Parameters that must be between 0 and 1 (ratios)
+        ratio_params = [
+            ('renal_clearance_ratio', self.renal_clearance_ratio)
+        ]
+        for param, value in ratio_params:
+            if value < 0 or value > 1:
+                logger.error(f"Invalid {param}: {value}")
+                raise RangeError(param, value, min_val=0, max_val=1)
+
+        # All standard deviations must be positive
+        std_params = [
+            ('absorption_std', self.absorption_std),
+            ('plasma_protein_binding_std', self.plasma_protein_binding_std),
+            ('clearance_std', self.clearance_std),
+            ('half_life_std', self.half_life_std)
+        ]
+        for param, value in std_params:
+            if value <= 0:
+                logger.error(f"Invalid {param}: {value}")
+                raise RangeError(param, value, min_val=0)
             
         logger.debug("Validated ADME parameters successfully")
         return self
