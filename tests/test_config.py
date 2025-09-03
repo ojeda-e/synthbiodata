@@ -8,6 +8,7 @@ from synthbiodata.config import (
     create_config,
     generate_sample_data,
 )
+from synthbiodata.exceptions import RangeError, DistributionError, DataTypeError
 
 
 def test_base_config_defaults():
@@ -28,13 +29,13 @@ def test_base_config_validation_valid_splits():
 
 
 def test_base_config_validation_invalid_splits():
-    """Test BaseConfig invalid splits."""
-    with pytest.raises(ValueError, match="Sum of test_size and val_size must be less than 1"):
+    """Test BaseConfig invalid splits with custom exceptions"""
+    with pytest.raises(RangeError, match="total split ratio must be less than 1.0, got 1.0"):
         BaseConfig(test_size=0.5, val_size=0.5)
 
 def test_base_config_validation_invalid_positive_ratio():
-    """Test BaseConfig invalid positive ratio."""
-    with pytest.raises(ValueError, match="positive_ratio must be between 0 and 1"):
+    """Test BaseConfig invalid positive ratio with custom exceptions"""
+    with pytest.raises(RangeError, match="positive_ratio must be between 0.0 and 1.0, got 1.5"):
         BaseConfig(positive_ratio=1.5)
 
 
@@ -55,20 +56,21 @@ def test_molecular_config_defaults():
 
 
 def test_molecular_config_validation():
-    """Test MolecularConfig validation rules."""
+    """Test MolecularConfig validation rules with custom exceptions."""
     # Test invalid molecular weight range
-    with pytest.raises(ValueError, match="mw_min must be less than mw_max"):
+    with pytest.raises(RangeError, match="mw_min must be less than 300.0, got 400.0"):
         MolecularConfig(mw_min=400.0, mw_max=300.0)
     
     # Test invalid target family probabilities
-    with pytest.raises(ValueError, match="target_family_probs must sum to 1.0"):
+    with pytest.raises(DistributionError, match="Target family probabilities must sum to 1.0, got 1.6"):
         MolecularConfig(
             target_families=['A', 'B'],
             target_family_probs=[0.8, 0.8]
         )
     
     # Test mismatched lengths
-    with pytest.raises(ValueError, match="Length of target_families must match target_family_probs"):
+    with pytest.raises(DistributionError, 
+                      match="Length mismatch: target_families \\(2\\) != target_family_probs \\(1\\)"):
         MolecularConfig(
             target_families=['A', 'B'],
             target_family_probs=[1.0]
@@ -80,8 +82,8 @@ def test_molecular_config_validation():
     ("tpsa_std", 0.0)
 ])
 def test_molecular_config_validation_invalid_standard_deviations(param, value):
-    """Test that MolecularConfig rejects invalid standard deviations."""
-    with pytest.raises(ValueError, match=f"{param} must be positive"):
+    """Test that MolecularConfig rejects invalid standard deviations with custom exceptions."""
+    with pytest.raises(RangeError, match=f"{param} must be greater than 0, got {value}"):
         MolecularConfig(**{param: value})
 
 
@@ -99,13 +101,13 @@ def test_adme_config_defaults():
 
 
 def test_adme_config_invalid_params():
-    """Test ADMEConfig invalid params."""
+    """Test ADMEConfig invalid params with custom exceptions."""
     # Invalid absorption mean
-    with pytest.raises(ValueError, match="absorption_mean must be between 0 and 100"):
+    with pytest.raises(RangeError, match="absorption_mean must be between 0 and 100, got 150.0"):
         ADMEConfig(absorption_mean=150.0)
     
     # Invalid clearance
-    with pytest.raises(ValueError, match="clearance_mean must be positive"):
+    with pytest.raises(RangeError, match="clearance_mean must be greater than 0, got -1.0"):
         ADMEConfig(clearance_mean=-1.0)
         
 
@@ -116,8 +118,8 @@ def test_adme_config_invalid_params():
     ("half_life_std", -2.0)
 ])
 def test_adme_config_validation_invalid_standard_deviations(param, value):
-    """Test that ADMEConfig rejects invalid standard deviations."""
-    with pytest.raises(ValueError, match=f"{param} must be positive"):
+    """Test that ADMEConfig rejects invalid standard deviations with custom exceptions."""
+    with pytest.raises(RangeError, match=f"{param} must be greater than 0, got {value}"):
         ADMEConfig(**{param: value})
 
 
@@ -155,12 +157,10 @@ def test_create_config_molecular_descriptors_custom():
 
 def test_config_unimplemented_data_types():
     """Test that unimplemented data types raise appropriate errors."""
-    with pytest.raises(ValueError, match="'something-unexistent' is not a valid DataType"):
+    with pytest.raises(DataTypeError, match="'something-unexistent' is not a valid DataType"):
         create_config(data_type="something-unexistent")
     
 def test_generate_sample_data_unimplemented_data_types():
     """Test that generate_sample_data raises error for unimplemented types."""
-    with pytest.raises(ValueError, match="'something-unexistent' is not a valid DataType"):
+    with pytest.raises(DataTypeError, match="'something-unexistent' is not a valid DataType"):
         generate_sample_data(data_type="something-unexistent")
-
-

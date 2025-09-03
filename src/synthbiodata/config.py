@@ -8,6 +8,8 @@ from pydantic import BaseModel, Field, model_validator
 import polars
 
 from .constants import DATASET_DEFAULTS, MOLECULAR_DEFAULTS, ADME_DEFAULTS, TARGET_FAMILIES, TARGET_FAMILY_PROBS
+from .exceptions import RangeError, DistributionError, DataTypeError
+from .logging import logger
 
 class DataType(str, Enum):
     """Supported data types for generation."""
@@ -32,10 +34,16 @@ class BaseConfig(BaseModel):
     @model_validator(mode='after')
     def validate_splits(self) -> 'BaseConfig':
         """Validate dataset split ratios."""
-        if self.test_size + self.val_size >= 1:
-            raise ValueError("Sum of test_size and val_size must be less than 1")
+        total_split = self.test_size + self.val_size
+        if total_split >= 1:
+            logger.error(f"Invalid split ratios: test_size={self.test_size}, val_size={self.val_size}, total={total_split}")
+            raise RangeError("total split ratio", total_split, max_val=1.0)
+            
         if self.positive_ratio <= 0 or self.positive_ratio >= 1:
-            raise ValueError("positive_ratio must be between 0 and 1")
+            logger.error(f"Invalid positive ratio: {self.positive_ratio}")
+            raise RangeError("positive_ratio", self.positive_ratio, min_val=0.0, max_val=1.0)
+            
+        logger.debug("Validated dataset split ratios successfully")
         return self
 
 
@@ -82,24 +90,40 @@ class MolecularConfig(BaseConfig):
     @model_validator(mode='after')
     def validate_ranges(self) -> 'MolecularConfig':
         """Validate molecular descriptor ranges and standard deviations."""
-        if self.mw_min >= self.mw_max:
-            raise ValueError("mw_min must be less than mw_max")
-        if self.logp_min >= self.logp_max:
-            raise ValueError("logp_min must be less than logp_max")
-        if self.tpsa_min >= self.tpsa_max:
-            raise ValueError("tpsa_min must be less than tpsa_max")
+        # Validate min/max ranges
+        for param in ['mw', 'logp', 'tpsa']:
+            min_val = getattr(self, f"{param}_min")
+            max_val = getattr(self, f"{param}_max")
+            if min_val >= max_val:
+                logger.error(f"Invalid {param} range: min={min_val}, max={max_val}")
+                raise RangeError(f"{param}_min", min_val, max_val=max_val)
+                
+        # Validate standard deviations
+        for param in ['mw', 'logp', 'tpsa']:
+            std_val = getattr(self, f"{param}_std")
+            if std_val <= 0:
+                logger.error(f"Invalid {param} standard deviation: {std_val}")
+                raise RangeError(f"{param}_std", std_val, min_val=0)
 
-        if self.mw_std <= 0:
-            raise ValueError("mw_std must be positive")
-        if self.logp_std <= 0:
-            raise ValueError("logp_std must be positive")
-        if self.tpsa_std <= 0:
-            raise ValueError("tpsa_std must be positive")
-
+        # Validate target distributions
         if len(self.target_families) != len(self.target_family_probs):
-            raise ValueError("Length of target_families must match target_family_probs")
-        if abs(sum(self.target_family_probs) - 1.0) > 1e-6:
-            raise ValueError("target_family_probs must sum to 1.0")
+            logger.error(
+                f"Mismatched lengths: target_families={len(self.target_families)}, "
+                f"target_family_probs={len(self.target_family_probs)}"
+            )
+            raise DistributionError(
+                f"Length mismatch: target_families ({len(self.target_families)}) "
+                f"!= target_family_probs ({len(self.target_family_probs)})"
+            )
+            
+        prob_sum = sum(self.target_family_probs)
+        if abs(prob_sum - 1.0) > 1e-6:
+            logger.error(f"Target family probabilities sum to {prob_sum}, should be 1.0")
+            raise DistributionError(
+                f"Target family probabilities must sum to 1.0, got {prob_sum}"
+            )
+            
+        logger.debug("Validated molecular descriptor ranges successfully")
         return self
 
 
@@ -134,25 +158,45 @@ class ADMEConfig(BaseConfig):
     @model_validator(mode='after')
     def validate_parameters(self) -> 'ADMEConfig':
         """Validate ADME parameters and standard deviations."""
+        # Validate means and ratios
         if self.absorption_mean < 0 or self.absorption_mean > 100:
-            raise ValueError("absorption_mean must be between 0 and 100")
+            logger.error(f"Invalid absorption mean: {self.absorption_mean}")
+            raise RangeError("absorption_mean", self.absorption_mean, min_val=0, max_val=100)
+            
         if self.plasma_protein_binding_mean < 0 or self.plasma_protein_binding_mean > 100:
-            raise ValueError("plasma_protein_binding_mean must be between 0 and 100")
+            logger.error(f"Invalid plasma protein binding mean: {self.plasma_protein_binding_mean}")
+            raise RangeError("plasma_protein_binding_mean", self.plasma_protein_binding_mean, min_val=0, max_val=100)
+            
         if self.clearance_mean <= 0:
-            raise ValueError("clearance_mean must be positive")
+            logger.error(f"Invalid clearance mean: {self.clearance_mean}")
+            raise RangeError("clearance_mean", self.clearance_mean, min_val=0)
+            
         if self.half_life_mean <= 0:
-            raise ValueError("half_life_mean must be positive")
+            logger.error(f"Invalid half life mean: {self.half_life_mean}")
+            raise RangeError("half_life_mean", self.half_life_mean, min_val=0)
+            
         if self.renal_clearance_ratio < 0 or self.renal_clearance_ratio > 1:
-            raise ValueError("renal_clearance_ratio must be between 0 and 1")
+            logger.error(f"Invalid renal clearance ratio: {self.renal_clearance_ratio}")
+            raise RangeError("renal_clearance_ratio", self.renal_clearance_ratio, min_val=0, max_val=1)
 
+        # Validate standard deviations
         if self.absorption_std <= 0:
-            raise ValueError("absorption_std must be positive")
+            logger.error(f"Invalid absorption std: {self.absorption_std}")
+            raise RangeError("absorption_std", self.absorption_std, min_val=0)
+            
         if self.plasma_protein_binding_std <= 0:
-            raise ValueError("plasma_protein_binding_std must be positive")
+            logger.error(f"Invalid plasma protein binding std: {self.plasma_protein_binding_std}")
+            raise RangeError("plasma_protein_binding_std", self.plasma_protein_binding_std, min_val=0)
+            
         if self.clearance_std <= 0:
-            raise ValueError("clearance_std must be positive")
+            logger.error(f"Invalid clearance std: {self.clearance_std}")
+            raise RangeError("clearance_std", self.clearance_std, min_val=0)
+            
         if self.half_life_std <= 0:
-            raise ValueError("half_life_std must be positive")
+            logger.error(f"Invalid half life std: {self.half_life_std}")
+            raise RangeError("half_life_std", self.half_life_std, min_val=0)
+            
+        logger.debug("Validated ADME parameters successfully")
         return self
 
 # Overloads for the create_config function - type hints
@@ -175,7 +219,12 @@ def create_config(data_type: str, imbalanced: bool = False, **kwargs) -> BaseCon
         # Add other config classes as needed
     }
     
-    data_type_enum = DataType(data_type)
+    try:
+        data_type_enum = DataType(data_type)
+    except ValueError:
+        logger.error(f"Invalid data type: {data_type}")
+        raise DataTypeError(f"'{data_type}' is not a valid DataType")
+        
     config_class = config_classes.get(data_type_enum, BaseConfig)
     
     # Set imbalanced flag and update kwargs
