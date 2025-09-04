@@ -708,7 +708,7 @@ wheels = [
 
 [[package]]
 name = "synthbiodata"
-version = "0.1.0"
+version = "0.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "faker" },
@@ -727,11 +727,8 @@ dev = [
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "ruff" },
-]
-
-[package.dev-dependencies]
-dev = [
     { name = "ty" },
+    { name = "typing-extensions" },
 ]
 
 [package.metadata]
@@ -747,11 +744,10 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.6" },
+    { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.1a20" },
+    { name = "typing-extensions", marker = "extra == 'dev'", specifier = ">=4.8.0" },
 ]
 provides-extras = ["dev"]
-
-[package.metadata.requires-dev]
-dev = [{ name = "ty", specifier = ">=0.0.1a20" }]
 
 [[package]]
 name = "tomli"

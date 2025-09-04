@@ -41,6 +41,7 @@ dev = [
     "black>=23.11.0",
     "mypy>=1.7.0",
     "typing-extensions>=4.8.0",
+    "ty>=0.0.1a20"
 ]
 
 [project.urls]
