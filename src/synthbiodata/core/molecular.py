@@ -1,37 +1,12 @@
 """
-Core data generation module for synthetic biological data.
+Generator for molecular descriptor data.
 """
 
-import logging
-from abc import ABC, abstractmethod
 import numpy as np
 import polars as pl
-from faker import Faker
-
-from synthbiodata.config.base import BaseConfig
-from synthbiodata.config.schema.v1.adme import ADMEConfig
+from synthbiodata.logging import logger
 from synthbiodata.config.schema.v1.molecular import MolecularConfig
-
-
-logging.basicConfig(level=logging.INFO, format='%(message)s')
-logger = logging.getLogger(__name__)
-
-
-class BaseGenerator(ABC):
-    """Base class for all data generators."""
-    
-    def __init__(self, config: BaseConfig):
-        """Initialize the generator."""
-        self.config = config
-        self.rng = np.random.default_rng(config.random_state)
-        self.fake = Faker()
-        self.fake.seed_instance(config.random_state)
-    
-    @abstractmethod
-    def generate_data(self) -> pl.DataFrame:
-        """Generate synthetic data."""
-        pass
-
+from synthbiodata.core.base import BaseGenerator
 
 class MolecularGenerator(BaseGenerator):
     """Generator for molecular descriptor data."""
@@ -135,7 +110,7 @@ class MolecularGenerator(BaseGenerator):
         top_indices = np.argsort(binding_prob)[-n_positive:]
         labels[top_indices] = 1
         
-        # Add some noise bzzz
+        # Add some noise
         noise_indices = self.rng.choice(
             len(labels), 
             size=int(len(labels) * 0.05), 
@@ -169,99 +144,5 @@ class MolecularGenerator(BaseGenerator):
         logger.info(f"Generated {len(df)} samples")
         logger.info(f"Features: {len(df.columns) - 1}")  # Exclude target column
         logger.info(f"Positive samples: {labels.sum()} ({labels.mean():.1%})")
-        
-        return df
-
-
-class ADMEGenerator(BaseGenerator):
-    """Generator for ADME (Absorption, Distribution, Metabolism, Excretion) data."""
-    
-    def __init__(self, config: ADMEConfig):
-        """Initialize the ADME generator."""
-        super().__init__(config)
-        self.config: ADMEConfig = config
-    
-    def generate_data(self) -> pl.DataFrame:
-        """Generate synthetic ADME data."""
-        logger.info(f"Generating {self.config.n_samples} ADME samples...")
-        if self.config.imbalanced:
-            logger.info(f"Using imbalanced dataset with positive ratio: {self.config.positive_ratio:.1%}")
-        
-        # Generate base features
-        data = {
-            'absorption': np.clip(
-                self.rng.normal(
-                    self.config.absorption_mean,
-                    self.config.absorption_std,
-                    self.config.n_samples
-                ),
-                0, 100
-            ),
-            'plasma_protein_binding': np.clip(
-                self.rng.normal(
-                    self.config.plasma_protein_binding_mean,
-                    self.config.plasma_protein_binding_std,
-                    self.config.n_samples
-                ),
-                0, 100
-            ),
-            'clearance': np.clip(
-                self.rng.normal(
-                    self.config.clearance_mean,
-                    self.config.clearance_std,
-                    self.config.n_samples
-                ),
-                0, None
-            ),
-            'half_life': np.clip(
-                self.rng.normal(
-                    self.config.half_life_mean,
-                    self.config.half_life_std,
-                    self.config.n_samples
-                ),
-                0, None
-            ),
-        }
-        
-        # Calculate drug bioavailability (binary target)
-        bioavailability = np.logical_and.reduce([
-            data['absorption'] > 50,
-            data['plasma_protein_binding'] < 95,
-            data['clearance'] < 8,
-            data['half_life'] > 6
-        ]).astype(int)
-        
-        # If imbalanced, adjust the labels
-        if self.config.imbalanced:
-            n_positive = int(self.config.n_samples * self.config.positive_ratio)
-            current_positives = bioavailability.sum()
-            if current_positives > n_positive:
-                # Randomly set some positives to negative
-                positive_indices = np.where(bioavailability == 1)[0]
-                to_flip = self.rng.choice(
-                    positive_indices,
-                    size=int(current_positives - n_positive),
-                    replace=False
-                )
-                bioavailability[to_flip] = 0
-            elif current_positives < n_positive:
-                # Randomly set some negatives to positive
-                negative_indices = np.where(bioavailability == 0)[0]
-                to_flip = self.rng.choice(
-                    negative_indices,
-                    size=int(n_positive - current_positives),
-                    replace=False
-                )
-                bioavailability[to_flip] = 1
-        
-
-        df = pl.DataFrame(data)
-        df = df.with_columns(pl.Series("good_bioavailability", bioavailability))
-        
-        positive_count = bioavailability.sum()
-        positive_ratio = positive_count / len(bioavailability)
-        logger.info(f"Generated {len(df)} samples")
-        logger.info(f"Features: {len(df.columns) - 1}")  # Exclude target column
-        logger.info(f"Positive samples: {positive_count} ({positive_ratio:.1%})")
         
         return df

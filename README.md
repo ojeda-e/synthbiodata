@@ -7,7 +7,10 @@
 
 A Python package for generating synthetic drug discovery data that mimics real-world scenarios using realistic molecular descriptors and target properties.
 
-> **⚠️ WARNING:** This package generates *synthetic* data for testing, and educational purposes only.  
+> [!WARNING]
+>
+> This package generates *synthetic* data for testing, and educational purposes only.  
+>
 > The data produced does **not** represent real biological or chemical measurements and should **not** be used for clinical, regulatory, or production applications.
 
 
@@ -48,10 +51,15 @@ df_adme = generate_sample_data(data_type="adme")
 print(f"Generated {len(df_adme)} samples with {len(df_adme.columns)} features")
 ```
 
-For more control over the data generation process:
+For more control over the data generation process, you can use the configuration system:
 
 ```python
+# Import the factory functions
 from synthbiodata import create_config, generate_sample_data
+
+# For even more control, you can import specific configuration classes
+from synthbiodata.config.schema.v1.molecular import MolecularConfig
+from synthbiodata.config.schema.v1.adme import ADMEConfig
 
 # Create a custom configuration for molecular descriptors
 config = create_config(
@@ -71,6 +79,38 @@ print(f"Features: {len(df.columns) - 1}")  # Exclude target column
 print(f"Positive ratio: {df['binds_target'].mean():.1%}")
 ```
 
+### Reproducible Data Generation
+
+To generate reproducible data, use the `random_state` parameter:
+
+```python
+# Generate first dataset with seed
+df1 = generate_sample_data(
+    data_type="molecular-descriptors",
+    random_state=321
+)
+
+# Generate second dataset with same seed - will be identical
+df2 = generate_sample_data(
+    data_type="molecular-descriptors",
+    random_state=321
+)
+
+# Verify datasets are identical
+assert (df1 == df2).all().all()
+
+# Different seed produces different data
+df3 = generate_sample_data(
+    data_type="molecular-descriptors",
+    random_state=123
+)
+```
+
+The `random_state` parameter ensures:
+- Consistent data generation across runs
+- Reproducible results for testing and validation
+- Easy comparison of model performance
+
 ## Data Types
 
 ### Molecular Descriptors
@@ -88,14 +128,52 @@ Generate ADME (Absorption, Distribution, Metabolism, Excretion) data with:
 - Clearance rates and half-life
 - Bioavailability predictions
 
-## Configuration
+## Package Structure
 
-The configuration system provides extensive options:
+The package is organized into several modules:
 
-- **BaseConfig**: Common parameters (sample size, positive ratio, train/test splits)
-- **MolecularConfig**: Molecular descriptor ranges and target family settings
-- **ADMEConfig**: ADME-specific parameters (absorption, clearance, etc.)
+### Configuration System (v1)
+
+The configuration system uses versioned schemas for better compatibility:
+
+```python
+from synthbiodata.config.schema.v1.molecular import MolecularConfig
+from synthbiodata.config.schema.v1.adme import ADMEConfig
+```
+
+Configuration options include:
+
+- **BaseConfig**: Common parameters
+  - Sample size and random seed
+  - Positive ratio for classification
+  - Train/validation/test splits
+  - Imbalanced dataset settings
+
+- **MolecularConfig**: Molecular descriptor settings
+  - Molecular weight ranges (min, max, mean, std)
+  - LogP and TPSA parameters
+  - Target protein families and probabilities
+  - Chemical fingerprint options
+
+- **ADMEConfig**: ADME-specific parameters
+  - Absorption and bioavailability settings
+  - Plasma protein binding ranges
+  - Clearance and half-life parameters
+  - Renal clearance ratios
+
+### Data Generation
+
+The package provides factory functions for easy data generation:
+
+```python
+from synthbiodata import create_config, generate_sample_data
+```
+
+Key features:
+- Type-safe configuration creation
+- Automatic validation of parameters
 - Support for both balanced and imbalanced datasets
-- Customizable random seeds for reproducibility
+- Reproducible data generation with random seeds
+- Efficient data output using Polars DataFrames
 
 

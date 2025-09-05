@@ -1,7 +1,4 @@
-"""
-Core functionality for synthetic data generation.
-"""
-
-from .generator import BaseGenerator, ADMEGenerator
+from synthbiodata.core.base import BaseGenerator
+from synthbiodata.core.adme import ADMEGenerator
 
 __all__ = ["BaseGenerator", "ADMEGenerator"]

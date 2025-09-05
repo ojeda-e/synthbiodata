@@ -1,22 +1,18 @@
 """
-synthbiodata - A synthetic data generator for drug discovery machine learning
-==========================================================================
-
-This package provides tools for generating synthetic drug discovery data that mimics 
-real-world scenarios using realistic molecular descriptors and target properties.
+Synthetic biological data generation package.
 """
 
-from .config import (
-    BaseConfig,
-    ADMEConfig,
-    create_config,
-    generate_sample_data,
-)
+from synthbiodata.config.base import BaseConfig, DataType
+from synthbiodata.config.schema.v1.molecular import MolecularConfig
+from synthbiodata.config.schema.v1.adme import ADMEConfig
+from synthbiodata.factory import create_config, create_generator, generate_sample_data
 
-__version__ = "0.1.0"
 __all__ = [
-    "BaseConfig",
-    "ADMEConfig",
-    "create_config",
-    "generate_sample_data",
+    'BaseConfig',
+    'MolecularConfig',
+    'ADMEConfig',
+    'DataType',
+    'create_config',
+    'create_generator',
+    'generate_sample_data',
 ]
