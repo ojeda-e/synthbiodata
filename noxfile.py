@@ -32,6 +32,6 @@ def lint(session: nox.Session) -> None:
 
 @nox.session(python=PYTHON_VERSIONS)
 def type_check(session: nox.Session) -> None:
-    """Type-check using mypy."""
+    """Type-check using ty."""
     install_dev_dependencies(session)
     session.run("ty", "check", "src", "tests", "noxfile.py")
