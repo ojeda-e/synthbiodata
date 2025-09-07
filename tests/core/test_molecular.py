@@ -102,3 +102,4 @@ def test_imbalanced_dataset_properties(molecular_imbalanced_config):
     # We add 5% noise in the generator, so tolerance should account for that
     noise_tolerance = 0.05
     assert np.isclose(positive_ratio, molecular_imbalanced_config.positive_ratio, atol=noise_tolerance)
+

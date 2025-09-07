@@ -1,1 +1,2 @@
 """Configuration schema tests package."""
+

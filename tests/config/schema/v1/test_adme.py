@@ -56,3 +56,4 @@ def test_adme_config_validation_invalid_standard_deviations(param, value):
     """Test that ADMEConfig rejects invalid standard deviations."""
     with pytest.raises(RangeError, match=f"{param} must be greater than 0, got {value}"):
         ADMEConfig(**{param: value})
+

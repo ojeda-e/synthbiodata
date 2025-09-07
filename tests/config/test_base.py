@@ -32,3 +32,4 @@ def test_base_config_validation_invalid_positive_ratio():
     """Test BaseConfig invalid positive ratio with custom exceptions."""
     with pytest.raises(RangeError, match="positive_ratio must be between 0.0 and 1.0, got 1.5"):
         BaseConfig(positive_ratio=1.5)
+
