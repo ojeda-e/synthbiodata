@@ -10,7 +10,52 @@ from synthbiodata.logging import logger
 from synthbiodata.config.base import BaseConfig
 
 class MolecularConfig(BaseConfig):
-    """Configuration for molecular descriptor data."""
+    """
+    Configuration schema for molecular descriptor data.
+
+    This class defines the configuration options for generating synthetic molecular
+    descriptor data, including ranges and distributions for molecular weight (MW),
+    LogP, and TPSA, as well as target protein family probabilities.
+
+    Parameters
+    ----------
+    mw_mean : float
+        Mean molecular weight of generated molecules.
+    mw_std : float
+        Standard deviation of molecular weight.
+    mw_min : float
+        Minimum allowed molecular weight.
+    mw_max : float
+        Maximum allowed molecular weight.
+    logp_mean : float
+        Mean LogP (octanol-water partition coefficient) value.
+    logp_std : float
+        Standard deviation of LogP.
+    logp_min : float
+        Minimum allowed LogP value.
+    logp_max : float
+        Maximum allowed LogP value.
+    tpsa_mean : float
+        Mean topological polar surface area (TPSA) value.
+    tpsa_std : float
+        Standard deviation of TPSA.
+    tpsa_min : float
+        Minimum allowed TPSA value.
+    tpsa_max : float
+        Maximum allowed TPSA value.
+    target_families : list of str
+        List of target protein families to sample from.
+    target_family_probs : list of float
+        Probability distribution for selecting each target family.
+
+    Examples
+    --------
+    >>> config = MolecularConfig()
+    >>> config.mw_mean
+    350.0
+    >>> config.target_families
+    ['GPCR', 'Kinase', 'Protease', 'Ion Channel', 'Nuclear Receptor']
+    """
     # Molecular descriptor ranges
     mw_mean: float = Field(MOLECULAR_DEFAULTS["MW_MEAN"], 
                         description="Mean molecular weight")

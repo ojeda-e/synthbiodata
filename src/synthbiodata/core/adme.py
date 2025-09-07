@@ -9,7 +9,37 @@ from synthbiodata.config.schema.v1.adme import ADMEConfig
 from synthbiodata.core.base import BaseGenerator
 
 class ADMEGenerator(BaseGenerator):
-    """Generator for ADME data."""
+    """
+    Generator for synthetic ADME (Absorption, Distribution, Metabolism, Excretion) data. Creates
+    binary bioavailability labels based on realistic pharmaceutical criteria.
+
+    The ADMEGenerator class creates synthetic datasets simulating pharmacokinetic properties
+    relevant to drug discovery and pharmaceutical research. It generates realistic distributions
+    for features such as absorption percentage, plasma protein binding, clearance rate, and half-life.
+    The generator can also simulate imbalanced datasets for classification tasks by controlling the
+    proportion of positive (bioavailable) samples.
+
+    This generator is useful for benchmarking machine learning models, simulating clinical trial data,
+    and educational purposes where realistic ADME data is required without using sensitive patient information.
+
+    Attributes:
+        config (ADMEConfig): Configuration object specifying statistical parameters and options for ADME data generation.
+
+    Methods:
+        __init__(config): Initialize the ADME generator with the provided configuration.
+        generate_data(): Generate a complete synthetic ADME dataset as a polars DataFrame, including binary bioavailability labels.
+    
+    Code Example:
+        ```python
+        from synthbiodata.config.schema.v1.adme import ADMEConfig
+        from synthbiodata.core.adme import ADMEGenerator
+        
+        config = ADMEConfig(n_samples=100, random_state=123)
+        gen = ADMEGenerator(config)
+        df = gen.generate_data()
+        print(df.head())
+        ```
+    """
     
     def __init__(self, config: ADMEConfig):
         """Initialize the ADME generator."""

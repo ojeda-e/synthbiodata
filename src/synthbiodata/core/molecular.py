@@ -9,7 +9,39 @@ from synthbiodata.config.schema.v1.molecular import MolecularConfig
 from synthbiodata.core.base import BaseGenerator
 
 class MolecularGenerator(BaseGenerator):
-    """Generator for molecular descriptor data."""
+    """
+    Generator for synthetic molecular descriptor data.
+
+    The MolecularGenerator class creates synthetic datasets of molecular descriptors and related features
+    for use in cheminformatics, drug discovery, and machine learning applications. It generates realistic
+    distributions of molecular properties such as molecular weight, LogP, TPSA, hydrogen bond donors/acceptors,
+    rotatable bonds, aromatic rings, formal charge, and chemical fingerprints. The generator can also simulate
+    target protein features and compute binding probabilities based on molecular properties.
+
+    ⚠️ Note that this generator inherits from `~synthbiodata.core.base.BaseGenerator`.
+
+    Attributes:
+        config (MolecularConfig): Configuration object specifying the statistical parameters and options for molecular data generation.
+
+    Methods:
+        __init__(config): Initialize the molecular generator with the provided configuration.
+        _generate_molecular_descriptors(n_samples): Generate arrays of molecular descriptor values for the specified number of samples.
+        _generate_target_features(n_samples): Generate arrays of target protein features for the specified number of samples.
+        _generate_chemical_fingerprints(n_samples, n_fingerprints): Generate binary chemical fingerprint features.
+        _calculate_binding_probabilities(data): Compute binding probabilities based on generated molecular descriptors and target features.
+        generate_data(): Generate a complete synthetic molecular dataset as a polars DataFrame.
+
+    Code Example:
+        ```python
+        from synthbiodata.config.schema.v1.molecular import MolecularConfig
+        from synthbiodata.core.molecular import MolecularGenerator
+        
+        config = MolecularConfig(n_samples=100, random_state=123)
+        gen = MolecularGenerator(config)
+        df = gen.generate_data()
+        print(df.head())
+        ```
+    """
     
     def __init__(self, config: MolecularConfig):
         """Initialize the molecular generator."""
