@@ -32,17 +32,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.1.0",
-    "ruff>=0.1.6",
-    "nox>=2023.4.22",
-    "nox-uv>=0.0.4",
-    "black>=23.11.0",
-    "mypy>=1.7.0",
-    "typing-extensions>=4.8.0",
-    "ty>=0.0.1a20"
-]
 
 [project.urls]
 Homepage = "https://github.com/ojeda-e/synthbiodata"
@@ -52,4 +41,22 @@ Documentation = "https://github.com/ojeda-e/synthbiodata#readme"
 [tool.hatch.build.targets.wheel]
 packages = ["src/synthbiodata"]
 
+[dependency-groups]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.1.6",
+    "typing-extensions>=4.8.0",
+    "ty>=0.0.1a20",
+    "nox>=2023.4.22",
+    "nox-uv>=0.0.4",
+]
+
+docs = [
+    "mkdocs>=1.6.1",
+    "mkdocs-gen-files>=0.5.0",
+    "mkdocs-material>=9.6.18",
+    "mkdocs-mermaid2-plugin>=1.2.2",
+    "mkdocstrings[python]>=0.30.0",
+]
 
