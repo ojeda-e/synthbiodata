@@ -1,7 +1,7 @@
 import nox
 
 PYTHON_VERSIONS = ["3.10", "3.11", "3.12", "3.13"]
-nox.options.sessions = ["tests", "lint", "type_check"]
+nox.options.sessions = ["tests", "lint", "type_check", "docs"]
 
 nox.options.default_venv_backend = "uv"
 
@@ -35,3 +35,10 @@ def type_check(session: nox.Session) -> None:
     """Type-check using ty."""
     install_dev_dependencies(session)
     session.run("ty", "check", "src", "tests", "noxfile.py")
+
+
+@nox.session(python=PYTHON_VERSIONS)
+def docs(session: nox.Session) -> None:
+    """Build and check documentation with MkDocs."""
+    session.install("--group", "docs", ".")
+    session.run("mkdocs", "build", "--strict")

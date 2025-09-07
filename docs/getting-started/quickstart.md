@@ -121,23 +121,19 @@ Now that you have the basics, explore these detailed guides:
 
 <div class="grid cards" markdown>
 
--   :material-download: **[Installation Guide](getting-started/installation.md)**
-    
-    Detailed installation instructions and troubleshooting
-
--   :material-rocket-launch: **[Quick Start Tutorial](getting-started/quickstart.md)**
+-   :material-rocket-launch: **[Quick Start Tutorial](quickstart.md)**
     
     Step-by-step tutorial with practical examples
 
--   :material-cog: **[Configuration Guide](getting-started/configuration.md)**
+-   :material-cog: **[Configuration Guide](../user-guide/configuration.md)**
     
     Learn about all configuration options and customization
 
--   :material-book-open: **[User Guide](user-guide/)**
+-   :material-book-open: **[User Guide](../user-guide/)**
     
     Comprehensive usage examples and advanced features
 
--   :material-api: **[API Reference](api/data-generators.md)**
+-   :material-api: **[API Reference](../api/data-generators.md)**
     
     Complete API documentation and class references
 
@@ -183,11 +179,11 @@ Now that you have the basics, explore these detailed guides:
 
 ## Need Help?
 
-- 📖 Check out the [User Guide](user-guide/) for detailed examples
-- 🔧 Visit the [API Reference](api/data-generators.md) for complete documentation
+- 📖 Check out the [User Guide](../user-guide/) for detailed examples
+- 🔧 Visit the [API Reference](../api/data-generators.md) for complete documentation
 - 🐛 Report issues on [GitHub](https://github.com/ojeda-e/synthbiodata/issues)
 - 💬 Join discussions in the [GitHub Discussions](https://github.com/ojeda-e/synthbiodata/discussions)
 
 ---
 
-Ready to dive deeper? Start with the [Quick Start Tutorial](getting-started/quickstart.md) for a hands-on walkthrough!
+Ready to dive deeper? Start with the [Quick Start Tutorial](quickstart.md) for a hands-on walkthrough!

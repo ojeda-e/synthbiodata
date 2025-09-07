@@ -101,7 +101,7 @@ Explore our comprehensive documentation:
 
 
 - **[Quick Start](getting-started/quickstart.md)** - Get up and running quickly
-- **[Configuration](getting-started/configuration.md)** - Learn about configuration options
+- **[Configuration](user-guide/configuration.md)** - Learn about configuration options
 - **[User Guide](user-guide/)** - Detailed usage examples and tutorials
 - **[API Reference](api/data-generators.md)** - Complete API documentation
 
