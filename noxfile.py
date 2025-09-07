@@ -8,7 +8,7 @@ nox.options.default_venv_backend = "uv"
 
 def install_dev_dependencies(session: nox.Session) -> None:
     """Helper function to install dev dependencies."""
-    session.install(".[dev]")
+    session.install("--group", "dev", ".")
 
 
 @nox.session(python=PYTHON_VERSIONS)
