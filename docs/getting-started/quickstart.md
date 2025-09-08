@@ -129,7 +129,7 @@ Now that you have the basics, explore these detailed guides:
     
     Learn about all configuration options and customization
 
--   :material-book-open: **[User Guide](../user-guide/)**
+-   :material-book-open: **[User Guide](../user-guide/architecture.md)**
     
     Comprehensive usage examples and advanced features
 
@@ -179,7 +179,7 @@ Now that you have the basics, explore these detailed guides:
 
 ## Need Help?
 
-- 📖 Check out the [User Guide](../user-guide/) for detailed examples
+- 📖 Check out the [User Guide](../user-guide/architecture.md) for detailed examples
 - 🔧 Visit the [API Reference](../api/data-generators.md) for complete documentation
 - 🐛 Report issues on [GitHub](https://github.com/ojeda-e/synthbiodata/issues)
 - 💬 Join discussions in the [GitHub Discussions](https://github.com/ojeda-e/synthbiodata/discussions)

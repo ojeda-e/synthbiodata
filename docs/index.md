@@ -76,9 +76,9 @@ Generate ADME (Absorption, Distribution, Metabolism, Excretion) data with:
 - Clearance rates and half-life
 - Bioavailability predictions
 
-## Installation
+## ⬇ Installation
 
-⬇ Install synthbiodata using your preferred package manager:
+Install synthbiodata using your preferred package manager:
 
 === "uv"
     ```bash
@@ -90,20 +90,19 @@ Generate ADME (Absorption, Distribution, Metabolism, Excretion) data with:
     pip install synthbiodata
     ```
 
-=== "conda"
+<!-- === "conda"
     ```bash
     conda install -c conda-forge synthbiodata
-    ```
+    ``` -->
 
-## Documentation
+## 📖 Documentation
 
-Explore our comprehensive documentation:
+Explore the docs:
 
-
-- **[Quick Start](getting-started/quickstart.md)** - Get up and running quickly
-- **[Configuration](user-guide/configuration.md)** - Learn about configuration options
-- **[User Guide](user-guide/)** - Detailed usage examples and tutorials
-- **[API Reference](api/data-generators.md)** - Complete API documentation
+- **[Quick Start](getting-started/quickstart.md)** - Get up and running quickly.
+- **[User Guide](user-guide/architecture.md)** - The backstage of Synthbiodata explained.
+- **[API Reference](api/data-generators.md)** - Complete API documentation.
+- **[Examples](getting-started/examples.md) - Detailed usage examples.
 
 ## 🔗 Links
 

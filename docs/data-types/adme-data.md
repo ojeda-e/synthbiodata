@@ -1,7 +1,7 @@
 # ADME Data
 
 !!! warning 
-    This page offers a concise overview of ADME data for reference purposes on how `synthbiodata` generates datasets for each property. It is **not** intended to be a comprehensive educational resource or a detailed scientific guide.
+    This page offers a concise overview of ADME data for reference purposes on how `synthbiodata` generates datasets for molecular properties. It is **not** intended to be a comprehensive educational resource or a detailed scientific guide.
 
 When developing and testing new drugs, it is essential to understand how a compound behaves within the body to evaluate its safety and potential toxicity.
 
