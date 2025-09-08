@@ -1154,7 +1154,7 @@ wheels = [
 
 [[package]]
 name = "synthbiodata"
-version = "0.0.0"
+version = "0.0.1a0"
 source = { editable = "." }
 dependencies = [
     { name = "faker" },
